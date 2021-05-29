@@ -15,8 +15,14 @@ afterAll(async () => {
 describe("ProductStorage testing", () => {
     const product = {
         _id: "60aa6ba5561e862690fe61e7",
-        name: "Olma",
-        description: "Qizil olma",
+        name: {
+            en: "Olma",
+            uz: "Olma"
+        },
+        description: {
+            en: "Olma",
+            uz: "Olma"
+        },
         price: 13000,
         categories: ["60aa6ba5561e862690fe61e5"]
     }

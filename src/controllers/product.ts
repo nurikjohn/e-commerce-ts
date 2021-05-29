@@ -5,7 +5,7 @@ import { IProduct } from "../models/Product"
 
 export class ProductController {
     getAll = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-        const products = await storage.product.find()
+        const products = await storage.product.find(req.query)
 
         res.status(200).json({
             success: true,
@@ -14,7 +14,7 @@ export class ProductController {
     })
 
     get = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-        const product = await storage.product.findById(req.params.id)
+        const product = await storage.product.findById(req.params.id, req.query)
 
         res.status(200).json({
             success: true,

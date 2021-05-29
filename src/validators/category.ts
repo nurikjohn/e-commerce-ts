@@ -4,7 +4,10 @@ import catchAsync from "../utils/catchAsync"
 
 export class CategoryValidator {
     createSchema = Joi.object({
-        name: Joi.string().required()
+        name: Joi.object({
+            en: Joi.string().required(),
+            uz: Joi.string().required()
+        })
     })
 
     create = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

@@ -60,7 +60,7 @@ export class CategoryStorage implements CategoryRepo {
         }
     }
 
-    async update(id: string, payload: ICategory): Promise<ICategory> {
+    async update(id: string, payload: {}): Promise<ICategory> {
         try {
             let dbObj = await Category.findByIdAndUpdate(id, payload, {
                 new: true

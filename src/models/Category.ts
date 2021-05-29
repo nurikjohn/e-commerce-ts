@@ -1,14 +1,15 @@
 import mongoose, { Document } from "mongoose"
+import langaugeSchema, { ILanguage } from "./Language"
 
 export interface ICategory extends Document {
     _id: string
-    name: string
+    name: ILanguage
     createdAt: Date
 }
 
 let categorySchema = new mongoose.Schema({
     name: {
-        type: String,
+        type: langaugeSchema,
         required: true
     },
     createdAt: {

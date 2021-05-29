@@ -4,6 +4,11 @@ dotenv.config({
     path: "../../.env"
 })
 
+enum languages {
+    en,
+    uz
+}
+
 interface Config {
     HttpPort: string
     MongoHost: string
@@ -15,6 +20,7 @@ interface Config {
     NodeEnv: string
     JwtSecret: string
     JwtExpiresIn: number
+    language: string
 }
 
 let config: Config = {
@@ -27,7 +33,8 @@ let config: Config = {
     NodeEnv: getConf("NODE_ENV", "development"),
     JwtSecret: getConf("JWT_SECRET", "jwt-secret"),
     JwtExpiresIn: +getConf("JWT_EXPIRES_IN", `${24 * 3600 * 1000}`),
-    MongoAuthDisable: true
+    MongoAuthDisable: true,
+    language: getConf("API_LANGUAGE", languages[languages.en])
 }
 
 function getConf(name: string, def: string = ""): string {

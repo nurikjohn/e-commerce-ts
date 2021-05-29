@@ -9,8 +9,8 @@ const controller = new ProductController()
 const validator = new ProductValidator()
 const authConroller = new AuthController()
 
-router.get("/", controller.getAll)
-router.get("/:id", controller.get)
+router.get("/", validator.get, controller.getAll)
+router.get("/:id", validator.get, controller.get)
 
 // Protected routes
 router.use(authConroller.protect, authConroller.allowTo([UserRole[UserRole.admin]]))

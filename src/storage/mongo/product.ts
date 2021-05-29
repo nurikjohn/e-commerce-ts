@@ -2,13 +2,22 @@ import { ProductRepo } from "../repo/product"
 import Product, { IProduct } from "../../models/Product"
 import { logger } from "../../config/logger"
 import AppError from "../../utils/appError"
+import _ from "lodash"
 
 export class ProductStorage implements ProductRepo {
     private scope = "storage.product"
 
-    async find(query?: Object): Promise<IProduct[]> {
+    async find(query?: any): Promise<IProduct[]> {
         try {
-            let dbObj = await Product.find({ ...query })
+            let dbObj = await Product.aggregate([
+                { $match: _.omit(query, ["lang"]) },
+                {
+                    $addFields: {
+                        name: `$name.${query.lang}`,
+                        description: `$description.${query.lang}`
+                    }
+                }
+            ])
 
             return dbObj
         } catch (error) {
@@ -17,25 +26,44 @@ export class ProductStorage implements ProductRepo {
         }
     }
 
-    async findOne(query: Object): Promise<IProduct> {
+    async findOne(query: any): Promise<IProduct> {
         try {
-            let dbObj = await Product.findOne({ ...query })
+            let dbObj = (await Product.aggregate([
+                { $match: _.omit(query, ["lang"]) },
+                {
+                    $addFields: {
+                        name: `$name.${query.lang}`,
+                        description: `$description.${query.lang}`
+                    }
+                },
+                { $limit: 1 }
+            ])) as IProduct[]
 
             if (!dbObj) {
                 logger.warn(`${this.scope}.get failed to findOne`)
                 throw new AppError(404, "Db object is not found")
             }
 
-            return dbObj
+            return dbObj?.[0]
         } catch (error) {
             logger.error(`${this.scope}.findOne: finished with error: ${error.message}`)
             throw error
         }
     }
 
-    async findById(id: string): Promise<IProduct> {
+    async findById(id: string, query?: any): Promise<any> {
         try {
-            let dbObj = await Product.findById(id)
+            let dbObj = await Product.aggregate([
+                { $match: { _id: id } },
+                {
+                    $addFields: {
+                        name: `$name.${query.lang}`,
+                        description: `$description.${query.lang}`
+                    }
+                }
+            ])
+
+            dbObj = dbObj?.[0]
 
             if (!dbObj) {
                 logger.warn(`${this.scope}.get failed to findOne`)
@@ -60,7 +88,7 @@ export class ProductStorage implements ProductRepo {
         }
     }
 
-    async update(id: string, payload: IProduct): Promise<IProduct> {
+    async update(id: string, payload: {}): Promise<IProduct> {
         try {
             let dbObj = await Product.findByIdAndUpdate(id, payload, {
                 new: true
